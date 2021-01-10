@@ -3,7 +3,6 @@ package arithmetic
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/kieron-dev/lsbasi/lexer"
 )
@@ -13,50 +12,88 @@ import (
 //counterfeiter:generate . Tokeniser
 
 type Tokeniser interface {
-	CurrentToken() lexer.Token
 	NextToken() (lexer.Token, error)
-	Eat(lexer.TokenType) error
 }
 
 type Interpreter struct {
-	tokeniser Tokeniser
+	tokeniser    Tokeniser
+	currentToken lexer.Token
 }
 
-func NewInterpreter(tokeniser Tokeniser) Interpreter {
-	return Interpreter{
+func NewInterpreter(tokeniser Tokeniser) *Interpreter {
+	return &Interpreter{
 		tokeniser: tokeniser,
 	}
 }
 
-func (i Interpreter) Expr() (int, error) {
+func (i *Interpreter) NextToken() (lexer.Token, error) {
 	token, err := i.tokeniser.NextToken()
+	i.currentToken = token
+
+	return token, err
+}
+
+func (i *Interpreter) Expr() (int, error) {
+	val, err := i.Term()
 	if err != nil {
 		return 0, err
 	}
 
-	leftVal := token.Value
-	if err := i.tokeniser.Eat(lexer.NUMBER); err != nil {
-		return 0, fmt.Errorf("invalid expression")
+	for i.currentToken.Type == lexer.PLUS || i.currentToken.Type == lexer.MINUS {
+		op := i.currentToken
+
+		nextVal, err := i.Term()
+		if err != nil {
+			return 0, err
+		}
+
+		if op.Type == lexer.PLUS {
+			val += nextVal
+		} else {
+			val -= nextVal
+		}
 	}
 
-	operation := i.tokeniser.CurrentToken()
-	if err := i.tokeniser.Eat(operation.Type); err != nil {
-		return 0, fmt.Errorf("invalid expression")
+	return val, nil
+}
+
+func (i *Interpreter) Term() (int, error) {
+	token, err := i.NextToken()
+	if err != nil {
+		return 0, err
 	}
 
-	token = i.tokeniser.CurrentToken()
-	rightVal := token.Value
-	if err := i.tokeniser.Eat(lexer.NUMBER); err != nil {
-		return 0, fmt.Errorf("invalid expression")
+	if token.Type != lexer.NUMBER {
+		return 0, errors.New("expected a number")
 	}
 
-	if operation.Type == lexer.PLUS {
-		return leftVal.(int) + rightVal.(int), nil
+	val := token.Value.(int)
+
+	_, err = i.NextToken()
+	if err != nil {
+		return 0, err
 	}
 
-	if operation.Type == lexer.MINUS {
-		return leftVal.(int) - rightVal.(int), nil
+	for i.currentToken.Type == lexer.MULT || i.currentToken.Type == lexer.DIV {
+		op := i.currentToken
+
+		next, err := i.NextToken()
+		if err != nil {
+			return 0, err
+		}
+
+		if next.Type != lexer.NUMBER {
+			return 0, errors.New("expected a number")
+		}
+
+		if op.Type == lexer.MULT {
+			val *= next.Value.(int)
+		}
+
+		if _, err = i.NextToken(); err != nil {
+			return 0, err
+		}
 	}
 
-	return 0, errors.New("unexpected op")
+	return val, nil
 }

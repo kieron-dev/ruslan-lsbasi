@@ -15,6 +15,8 @@ const (
 	NUMBER
 	PLUS
 	MINUS
+	MULT
+	DIV
 	EOF
 )
 
@@ -32,24 +34,6 @@ func NewTokeniser(data io.Reader) *Tokeniser {
 	return &Tokeniser{
 		buf: bufio.NewReader(data),
 	}
-}
-
-func (t *Tokeniser) Eat(tt TokenType) error {
-	if t.currentToken.Type != tt {
-		return fmt.Errorf("expected current token to be of type %v but was %v", tt, t.currentToken.Type)
-	}
-
-	var err error
-	t.currentToken, err = t.NextToken()
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (t Tokeniser) CurrentToken() Token {
-	return t.currentToken
 }
 
 func (t *Tokeniser) NextToken() (Token, error) {
@@ -80,6 +64,12 @@ func (t *Tokeniser) NextToken() (Token, error) {
 	case c == '-':
 		token = Token{
 			Type:  MINUS,
+			Value: c,
+		}
+
+	case c == '*':
+		token = Token{
+			Type:  MULT,
 			Value: c,
 		}
 

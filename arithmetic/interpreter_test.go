@@ -1,8 +1,6 @@
 package arithmetic_test
 
 import (
-	"errors"
-
 	"github.com/kieron-dev/lsbasi/arithmetic"
 	"github.com/kieron-dev/lsbasi/arithmetic/arithmeticfakes"
 	"github.com/kieron-dev/lsbasi/lexer"
@@ -12,12 +10,23 @@ import (
 
 var _ = Describe("intepreter", func() {
 	var (
-		interpreter arithmetic.Interpreter
+		interpreter *arithmetic.Interpreter
 		tokeniser   *arithmeticfakes.FakeTokeniser
+		tokens      []lexer.Token
 	)
 
 	BeforeEach(func() {
 		tokeniser = new(arithmeticfakes.FakeTokeniser)
+
+		tokenPos := -1
+		tokeniser.NextTokenStub = func() (lexer.Token, error) {
+			tokenPos++
+			if tokenPos >= len(tokens) {
+				return lexer.Token{Type: lexer.EOF}, nil
+			}
+
+			return tokens[tokenPos], nil
+		}
 	})
 
 	JustBeforeEach(func() {
@@ -26,9 +35,11 @@ var _ = Describe("intepreter", func() {
 
 	Describe("addition", func() {
 		BeforeEach(func() {
-			tokeniser.NextTokenReturns(lexer.Token{Value: 3}, nil)
-			tokeniser.CurrentTokenReturnsOnCall(0, lexer.Token{Type: lexer.PLUS})
-			tokeniser.CurrentTokenReturnsOnCall(1, lexer.Token{Value: 8})
+			tokens = []lexer.Token{
+				{Type: lexer.NUMBER, Value: 3},
+				{Type: lexer.PLUS},
+				{Type: lexer.NUMBER, Value: 8},
+			}
 		})
 
 		It("can add two numbers", func() {
@@ -38,28 +49,67 @@ var _ = Describe("intepreter", func() {
 		})
 	})
 
-	Describe("subtraction", func() {
+	Describe("multiple addition", func() {
 		BeforeEach(func() {
-			tokeniser.NextTokenReturns(lexer.Token{Value: 3}, nil)
-			tokeniser.CurrentTokenReturnsOnCall(0, lexer.Token{Type: lexer.MINUS})
-			tokeniser.CurrentTokenReturnsOnCall(1, lexer.Token{Value: 8})
+			tokens = []lexer.Token{
+				{Type: lexer.NUMBER, Value: 3},
+				{Type: lexer.PLUS},
+				{Type: lexer.NUMBER, Value: 8},
+				{Type: lexer.PLUS},
+				{Type: lexer.NUMBER, Value: 6},
+			}
 		})
 
 		It("can add two numbers", func() {
+			val, err := interpreter.Expr()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(val).To(Equal(17))
+		})
+	})
+
+	Describe("subtraction", func() {
+		BeforeEach(func() {
+			tokens = []lexer.Token{
+				{Type: lexer.NUMBER, Value: 3},
+				{Type: lexer.MINUS},
+				{Type: lexer.NUMBER, Value: 8},
+			}
+		})
+
+		It("can subtract two numbers", func() {
 			val, err := interpreter.Expr()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(val).To(Equal(-5))
 		})
 	})
 
+	Describe("multiplication", func() {
+		BeforeEach(func() {
+			tokens = []lexer.Token{
+				{Type: lexer.NUMBER, Value: 3},
+				{Type: lexer.MULT},
+				{Type: lexer.NUMBER, Value: 8},
+			}
+		})
+
+		It("can multiply two numbers", func() {
+			val, err := interpreter.Expr()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(val).To(Equal(24))
+		})
+	})
+
 	Context("invalid input", func() {
 		BeforeEach(func() {
-			tokeniser.EatReturns(errors.New("oops"))
+			tokens = []lexer.Token{
+				{Type: lexer.NUMBER, Value: 3},
+				{Type: lexer.MULT},
+			}
 		})
 
 		It("errors", func() {
 			_, err := interpreter.Expr()
-			Expect(err).To(MatchError(ContainSubstring("invalid expression")))
+			Expect(err).To(MatchError(ContainSubstring("expected a number")))
 		})
 	})
 })

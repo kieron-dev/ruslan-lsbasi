@@ -9,27 +9,6 @@ import (
 )
 
 type FakeTokeniser struct {
-	CurrentTokenStub        func() lexer.Token
-	currentTokenMutex       sync.RWMutex
-	currentTokenArgsForCall []struct {
-	}
-	currentTokenReturns struct {
-		result1 lexer.Token
-	}
-	currentTokenReturnsOnCall map[int]struct {
-		result1 lexer.Token
-	}
-	EatStub        func(lexer.TokenType) error
-	eatMutex       sync.RWMutex
-	eatArgsForCall []struct {
-		arg1 lexer.TokenType
-	}
-	eatReturns struct {
-		result1 error
-	}
-	eatReturnsOnCall map[int]struct {
-		result1 error
-	}
 	NextTokenStub        func() (lexer.Token, error)
 	nextTokenMutex       sync.RWMutex
 	nextTokenArgsForCall []struct {
@@ -44,120 +23,6 @@ type FakeTokeniser struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
-}
-
-func (fake *FakeTokeniser) CurrentToken() lexer.Token {
-	fake.currentTokenMutex.Lock()
-	ret, specificReturn := fake.currentTokenReturnsOnCall[len(fake.currentTokenArgsForCall)]
-	fake.currentTokenArgsForCall = append(fake.currentTokenArgsForCall, struct {
-	}{})
-	stub := fake.CurrentTokenStub
-	fakeReturns := fake.currentTokenReturns
-	fake.recordInvocation("CurrentToken", []interface{}{})
-	fake.currentTokenMutex.Unlock()
-	if stub != nil {
-		return stub()
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fakeReturns.result1
-}
-
-func (fake *FakeTokeniser) CurrentTokenCallCount() int {
-	fake.currentTokenMutex.RLock()
-	defer fake.currentTokenMutex.RUnlock()
-	return len(fake.currentTokenArgsForCall)
-}
-
-func (fake *FakeTokeniser) CurrentTokenCalls(stub func() lexer.Token) {
-	fake.currentTokenMutex.Lock()
-	defer fake.currentTokenMutex.Unlock()
-	fake.CurrentTokenStub = stub
-}
-
-func (fake *FakeTokeniser) CurrentTokenReturns(result1 lexer.Token) {
-	fake.currentTokenMutex.Lock()
-	defer fake.currentTokenMutex.Unlock()
-	fake.CurrentTokenStub = nil
-	fake.currentTokenReturns = struct {
-		result1 lexer.Token
-	}{result1}
-}
-
-func (fake *FakeTokeniser) CurrentTokenReturnsOnCall(i int, result1 lexer.Token) {
-	fake.currentTokenMutex.Lock()
-	defer fake.currentTokenMutex.Unlock()
-	fake.CurrentTokenStub = nil
-	if fake.currentTokenReturnsOnCall == nil {
-		fake.currentTokenReturnsOnCall = make(map[int]struct {
-			result1 lexer.Token
-		})
-	}
-	fake.currentTokenReturnsOnCall[i] = struct {
-		result1 lexer.Token
-	}{result1}
-}
-
-func (fake *FakeTokeniser) Eat(arg1 lexer.TokenType) error {
-	fake.eatMutex.Lock()
-	ret, specificReturn := fake.eatReturnsOnCall[len(fake.eatArgsForCall)]
-	fake.eatArgsForCall = append(fake.eatArgsForCall, struct {
-		arg1 lexer.TokenType
-	}{arg1})
-	stub := fake.EatStub
-	fakeReturns := fake.eatReturns
-	fake.recordInvocation("Eat", []interface{}{arg1})
-	fake.eatMutex.Unlock()
-	if stub != nil {
-		return stub(arg1)
-	}
-	if specificReturn {
-		return ret.result1
-	}
-	return fakeReturns.result1
-}
-
-func (fake *FakeTokeniser) EatCallCount() int {
-	fake.eatMutex.RLock()
-	defer fake.eatMutex.RUnlock()
-	return len(fake.eatArgsForCall)
-}
-
-func (fake *FakeTokeniser) EatCalls(stub func(lexer.TokenType) error) {
-	fake.eatMutex.Lock()
-	defer fake.eatMutex.Unlock()
-	fake.EatStub = stub
-}
-
-func (fake *FakeTokeniser) EatArgsForCall(i int) lexer.TokenType {
-	fake.eatMutex.RLock()
-	defer fake.eatMutex.RUnlock()
-	argsForCall := fake.eatArgsForCall[i]
-	return argsForCall.arg1
-}
-
-func (fake *FakeTokeniser) EatReturns(result1 error) {
-	fake.eatMutex.Lock()
-	defer fake.eatMutex.Unlock()
-	fake.EatStub = nil
-	fake.eatReturns = struct {
-		result1 error
-	}{result1}
-}
-
-func (fake *FakeTokeniser) EatReturnsOnCall(i int, result1 error) {
-	fake.eatMutex.Lock()
-	defer fake.eatMutex.Unlock()
-	fake.EatStub = nil
-	if fake.eatReturnsOnCall == nil {
-		fake.eatReturnsOnCall = make(map[int]struct {
-			result1 error
-		})
-	}
-	fake.eatReturnsOnCall[i] = struct {
-		result1 error
-	}{result1}
 }
 
 func (fake *FakeTokeniser) NextToken() (lexer.Token, error) {
@@ -219,10 +84,6 @@ func (fake *FakeTokeniser) NextTokenReturnsOnCall(i int, result1 lexer.Token, re
 func (fake *FakeTokeniser) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.currentTokenMutex.RLock()
-	defer fake.currentTokenMutex.RUnlock()
-	fake.eatMutex.RLock()
-	defer fake.eatMutex.RUnlock()
 	fake.nextTokenMutex.RLock()
 	defer fake.nextTokenMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

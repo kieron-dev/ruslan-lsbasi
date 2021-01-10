@@ -91,6 +91,18 @@ var _ = Describe("Tokeniser", func() {
 			})
 		})
 
+		Context("MULT", func() {
+			BeforeEach(func() {
+				expr = "*"
+			})
+
+			It("recognises *", func() {
+				token, err := tokeniser.NextToken()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(token.Type).To(Equal(lexer.MULT))
+			})
+		})
+
 		Context("invalid input", func() {
 			BeforeEach(func() {
 				expr = "asdf"
@@ -102,26 +114,33 @@ var _ = Describe("Tokeniser", func() {
 			})
 		})
 
-		Describe("eating", func() {
-			It("can eat a token type", func() {
-				token, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token).To(Equal(lexer.Token{
-					Type:  lexer.NUMBER,
-					Value: 3,
-				}))
-
-				err = tokeniser.Eat(lexer.NUMBER)
-
-				Expect(err).NotTo(HaveOccurred())
-				Expect(tokeniser.CurrentToken()).To(Equal(lexer.Token{Type: lexer.PLUS, Value: byte('+')}))
+		Describe("workflow", func() {
+			BeforeEach(func() {
+				expr = "3 + 5 * 9 - 2"
 			})
 
-			It("errors when eating an incorrect type", func() {
-				tokeniser.NextToken()
-				err := tokeniser.Eat(lexer.PLUS)
+			It("next functions as expected", func() {
+				token1, err := tokeniser.NextToken()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(token1.Type).To(Equal(lexer.NUMBER))
+				Expect(token1.Value).To(Equal(3))
 
-				Expect(err).To(MatchError(ContainSubstring("expected current token to be of type")))
+				token2, err := tokeniser.NextToken()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(token2.Type).To(Equal(lexer.PLUS))
+
+				for i := 0; i < 5; i++ {
+					_, err := tokeniser.NextToken()
+					Expect(err).NotTo(HaveOccurred())
+				}
+
+				tokenEOF, err := tokeniser.NextToken()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(tokenEOF.Type).To(Equal(lexer.EOF))
+
+				tokenEOF2, err := tokeniser.NextToken()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(tokenEOF2.Type).To(Equal(lexer.EOF))
 			})
 		})
 	})
