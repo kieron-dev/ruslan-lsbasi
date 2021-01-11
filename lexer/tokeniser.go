@@ -17,6 +17,8 @@ const (
 	MINUS
 	MULT
 	DIV
+	LPAREN
+	RPAREN
 	EOF
 )
 
@@ -76,6 +78,18 @@ func (t *Tokeniser) NextToken() (Token, error) {
 	case c == '/':
 		token = Token{
 			Type:  DIV,
+			Value: c,
+		}
+
+	case c == '(':
+		token = Token{
+			Type:  LPAREN,
+			Value: c,
+		}
+
+	case c == ')':
+		token = Token{
+			Type:  RPAREN,
 			Value: c,
 		}
 

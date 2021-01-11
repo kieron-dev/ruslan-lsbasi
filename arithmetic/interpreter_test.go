@@ -115,6 +115,26 @@ var _ = Describe("intepreter", func() {
 		})
 	})
 
+	Describe("parentheses", func() {
+		BeforeEach(func() {
+			tokens = []lexer.Token{
+				{Type: lexer.NUMBER, Value: 25},
+				{Type: lexer.MINUS},
+				{Type: lexer.LPAREN},
+				{Type: lexer.NUMBER, Value: 5},
+				{Type: lexer.PLUS},
+				{Type: lexer.NUMBER, Value: 5},
+				{Type: lexer.RPAREN},
+			}
+		})
+
+		It("does the brackets first", func() {
+			val, err := interpreter.Expr()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(val).To(Equal(15))
+		})
+	})
+
 	Context("invalid input", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
@@ -125,7 +145,7 @@ var _ = Describe("intepreter", func() {
 
 		It("errors", func() {
 			_, err := interpreter.Expr()
-			Expect(err).To(MatchError(ContainSubstring("expected a number")))
+			Expect(err).To(MatchError(ContainSubstring("expected a left parenthesis or a number")))
 		})
 	})
 })

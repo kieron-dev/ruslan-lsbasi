@@ -96,8 +96,21 @@ func (i *Interpreter) Factor() (int, error) {
 		return 0, err
 	}
 
+	if token.Type == lexer.LPAREN {
+		val, err := i.Expr()
+		if err != nil {
+			return 0, err
+		}
+
+		if i.currentToken.Type != lexer.RPAREN {
+			return 0, errors.New("expected closing parenthesis")
+		}
+
+		return val, nil
+	}
+
 	if token.Type != lexer.NUMBER {
-		return 0, errors.New("expected a number")
+		return 0, errors.New("expected a left parenthesis or a number")
 	}
 
 	return token.Value.(int), nil
