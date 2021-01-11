@@ -34,5 +34,6 @@ var _ = Describe("Integration", func() {
 		Entry("precedence III", "3 + 24 / 8", 6),
 		Entry("precedence IV", "(3 + 24) / 9", 3),
 		Entry("precedence V", "(163 + 17) / (9 * 10)", 2),
+		Entry("precedence VI", "7 + 3 * (10 / (12 / (3 + 1) - 1))", 22),
 	)
 })
