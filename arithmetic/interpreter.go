@@ -58,16 +58,10 @@ func (i *Interpreter) Expr() (int, error) {
 }
 
 func (i *Interpreter) Term() (int, error) {
-	token, err := i.NextToken()
+	val, err := i.Factor()
 	if err != nil {
 		return 0, err
 	}
-
-	if token.Type != lexer.NUMBER {
-		return 0, errors.New("expected a number")
-	}
-
-	val := token.Value.(int)
 
 	_, err = i.NextToken()
 	if err != nil {
@@ -77,17 +71,15 @@ func (i *Interpreter) Term() (int, error) {
 	for i.currentToken.Type == lexer.MULT || i.currentToken.Type == lexer.DIV {
 		op := i.currentToken
 
-		next, err := i.NextToken()
+		next, err := i.Factor()
 		if err != nil {
 			return 0, err
 		}
 
-		if next.Type != lexer.NUMBER {
-			return 0, errors.New("expected a number")
-		}
-
 		if op.Type == lexer.MULT {
-			val *= next.Value.(int)
+			val *= next
+		} else {
+			val /= next
 		}
 
 		if _, err = i.NextToken(); err != nil {
@@ -96,4 +88,17 @@ func (i *Interpreter) Term() (int, error) {
 	}
 
 	return val, nil
+}
+
+func (i *Interpreter) Factor() (int, error) {
+	token, err := i.NextToken()
+	if err != nil {
+		return 0, err
+	}
+
+	if token.Type != lexer.NUMBER {
+		return 0, errors.New("expected a number")
+	}
+
+	return token.Value.(int), nil
 }

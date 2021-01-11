@@ -73,6 +73,12 @@ func (t *Tokeniser) NextToken() (Token, error) {
 			Value: c,
 		}
 
+	case c == '/':
+		token = Token{
+			Type:  DIV,
+			Value: c,
+		}
+
 	case c >= '0' && c <= '9':
 		n, err := t.readNumber(c)
 		if err != nil {

@@ -103,6 +103,18 @@ var _ = Describe("Tokeniser", func() {
 			})
 		})
 
+		Context("DIV", func() {
+			BeforeEach(func() {
+				expr = "/"
+			})
+
+			It("recognises /", func() {
+				token, err := tokeniser.NextToken()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(token.Type).To(Equal(lexer.DIV))
+			})
+		})
+
 		Context("invalid input", func() {
 			BeforeEach(func() {
 				expr = "asdf"

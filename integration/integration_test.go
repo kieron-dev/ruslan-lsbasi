@@ -27,7 +27,10 @@ var _ = Describe("Integration", func() {
 		Entry("add and subtract", "3 + 5 - 51", -43),
 		Entry("simple multiplication", "3 *  5", 15),
 		Entry("multiple multiplication", "3 * 4 * 5", 60),
+		Entry("simple division", "25 /  5", 5),
+		Entry("simple division", "3*24/6", 12),
 		Entry("precedence I", "3 + 4 * 5", 23),
 		Entry("precedence II", "3 * 4 + 5", 17),
+		Entry("precedence III", "3 + 24 / 8", 6),
 	)
 })

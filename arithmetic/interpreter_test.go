@@ -99,6 +99,22 @@ var _ = Describe("intepreter", func() {
 		})
 	})
 
+	Describe("division", func() {
+		BeforeEach(func() {
+			tokens = []lexer.Token{
+				{Type: lexer.NUMBER, Value: 25},
+				{Type: lexer.DIV},
+				{Type: lexer.NUMBER, Value: 8},
+			}
+		})
+
+		It("can multiply two numbers", func() {
+			val, err := interpreter.Expr()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(val).To(Equal(3))
+		})
+	})
+
 	Context("invalid input", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
