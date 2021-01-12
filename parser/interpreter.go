@@ -1,5 +1,5 @@
-// Package arithmetic implements an arithmetic interpreter
-package arithmetic
+// Package parser implements an arithmetic interpreter
+package parser
 
 import (
 	"errors"

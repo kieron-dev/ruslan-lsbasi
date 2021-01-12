@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kieron-dev/lsbasi/arithmetic"
 	"github.com/kieron-dev/lsbasi/lexer"
+	"github.com/kieron-dev/lsbasi/parser"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 		line := scanner.Text()
 		line = strings.TrimSpace(line)
 
-		interp := arithmetic.NewInterpreter(lexer.NewTokeniser(strings.NewReader(line)))
+		interp := parser.NewInterpreter(lexer.NewTokeniser(strings.NewReader(line)))
 		val, err := interp.Expr()
 		if err != nil {
 			fmt.Printf("invalid expression: %q\n", line)

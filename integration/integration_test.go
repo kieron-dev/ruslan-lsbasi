@@ -3,8 +3,8 @@ package integration_test
 import (
 	"strings"
 
-	"github.com/kieron-dev/lsbasi/arithmetic"
 	"github.com/kieron-dev/lsbasi/lexer"
+	"github.com/kieron-dev/lsbasi/parser"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
@@ -13,7 +13,7 @@ import (
 var _ = Describe("Integration", func() {
 	DescribeTable("expressions", func(expr string, res int) {
 		tokeniser := lexer.NewTokeniser(strings.NewReader(expr))
-		interpreter := arithmetic.NewInterpreter(tokeniser)
+		interpreter := parser.NewInterpreter(tokeniser)
 		out, err := interpreter.Expr()
 		Expect(err).NotTo(HaveOccurred())
 		Expect(out).To(Equal(res))

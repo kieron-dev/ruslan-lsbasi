@@ -1,22 +1,22 @@
-package arithmetic_test
+package parser_test
 
 import (
-	"github.com/kieron-dev/lsbasi/arithmetic"
-	"github.com/kieron-dev/lsbasi/arithmetic/arithmeticfakes"
 	"github.com/kieron-dev/lsbasi/lexer"
+	"github.com/kieron-dev/lsbasi/parser"
+	"github.com/kieron-dev/lsbasi/parser/parserfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("intepreter", func() {
 	var (
-		interpreter *arithmetic.Interpreter
-		tokeniser   *arithmeticfakes.FakeTokeniser
+		interpreter *parser.Interpreter
+		tokeniser   *parserfakes.FakeTokeniser
 		tokens      []lexer.Token
 	)
 
 	BeforeEach(func() {
-		tokeniser = new(arithmeticfakes.FakeTokeniser)
+		tokeniser = new(parserfakes.FakeTokeniser)
 
 		tokenPos := -1
 		tokeniser.NextTokenStub = func() (lexer.Token, error) {
@@ -30,7 +30,7 @@ var _ = Describe("intepreter", func() {
 	})
 
 	JustBeforeEach(func() {
-		interpreter = arithmetic.NewInterpreter(tokeniser)
+		interpreter = parser.NewInterpreter(tokeniser)
 	})
 
 	Describe("addition", func() {
