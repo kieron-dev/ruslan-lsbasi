@@ -19,8 +19,8 @@ func main() {
 		line := scanner.Text()
 		line = strings.TrimSpace(line)
 
-		interp := parser.NewInterpreter(lexer.NewTokeniser(strings.NewReader(line)))
-		val, err := interp.Expr()
+		pars := parser.NewParser(lexer.NewTokeniser(strings.NewReader(line)))
+		val, err := pars.Expr()
 		if err != nil {
 			fmt.Printf("invalid expression: %q\n", line)
 			fmt.Print("expr> ")
