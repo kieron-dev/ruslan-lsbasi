@@ -8,11 +8,19 @@ import (
 	"github.com/kieron-dev/lsbasi/parser"
 )
 
-type Interpreter struct {
-	pars *parser.Parser
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+
+//counterfeiter:generate . Expresser
+
+type Expresser interface {
+	Expr() (parser.ASTNode, error)
 }
 
-func NewInterpreter(pars *parser.Parser) *Interpreter {
+type Interpreter struct {
+	pars Expresser
+}
+
+func NewInterpreter(pars Expresser) *Interpreter {
 	return &Interpreter{
 		pars: pars,
 	}
