@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/kieron-dev/lsbasi/interpreter"
 	"github.com/kieron-dev/lsbasi/lexer"
 	"github.com/kieron-dev/lsbasi/parser"
 )
@@ -20,14 +21,20 @@ func main() {
 		line = strings.TrimSpace(line)
 
 		pars := parser.NewParser(lexer.NewTokeniser(strings.NewReader(line)))
-		val, err := pars.Expr()
+		interp := interpreter.NewInterpreter(pars)
+		val, err := interp.Interpret()
 		if err != nil {
 			fmt.Printf("invalid expression: %q\n", line)
 			fmt.Print("expr> ")
 			continue
 		}
 
-		fmt.Printf("%d\n", val)
+		rpn, _ := interpreter.NewReversePolish(parser.NewParser(lexer.NewTokeniser(strings.NewReader(line)))).Interpret()
+		lisp, _ := interpreter.NewLisp(parser.NewParser(lexer.NewTokeniser(strings.NewReader(line)))).Interpret()
+
+		fmt.Printf("result: %d\n", val)
+		fmt.Printf("rpn: %s\n", rpn)
+		fmt.Printf("lisp: %s\n\n", lisp)
 		fmt.Print("expr> ")
 	}
 }
