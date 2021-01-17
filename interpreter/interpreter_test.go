@@ -65,4 +65,17 @@ var _ = Describe("Interpreter", func() {
 			Expect(lisp.Interpret()).To(Equal("(+ 2 (* 5 3))"))
 		})
 	})
+
+	Context("-5", func() {
+		BeforeEach(func() {
+			ast5 := &parser.NumNode{Value: 5}
+			ast = &parser.UnaryNode{Child: ast5, Token: lexer.Token{Type: lexer.MINUS, Value: byte('-')}}
+		})
+
+		It("gets -5", func() {
+			Expect(interp.Interpret()).To(Equal(-5))
+			Expect(revpolish.Interpret()).To(Equal("5 neg"))
+			Expect(lisp.Interpret()).To(Equal("(- 5)"))
+		})
+	})
 })

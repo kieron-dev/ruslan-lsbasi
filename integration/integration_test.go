@@ -37,6 +37,10 @@ var _ = Describe("Integration", func() {
 		Entry("precedence IV", "(3 + 24) / 9", 3),
 		Entry("precedence V", "(163 + 17) / (9 * 10)", 2),
 		Entry("precedence VI", "7 + 3 * (10 / (12 / (3 + 1) - 1))", 22),
+		Entry("unary minus", "- 5  + 3", -2),
+		Entry("unary plus", "+ 5  + 3", 8),
+		Entry("unary minus minus", "- - 5  + 3", 8),
+		Entry("unary minus parens", "-(3+2)", -5),
 	)
 
 	DescribeTable("reverse polish translation", func(expr, res string) {

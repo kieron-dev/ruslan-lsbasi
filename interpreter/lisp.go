@@ -29,6 +29,12 @@ func (l Lisp) VisitNum(node *parser.NumNode) interface{} {
 	return strconv.Itoa(node.Value)
 }
 
+func (l Lisp) VisitUnary(node *parser.UnaryNode) interface{} {
+	child := node.Child.Accept(l)
+
+	return fmt.Sprintf("(%c %s)", node.Token.Value, child.(string))
+}
+
 func (l Lisp) Interpret() (string, error) {
 	ast, err := l.pars.Expr()
 	if err != nil {

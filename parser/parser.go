@@ -79,6 +79,15 @@ func (p *Parser) Factor() (ASTNode, error) {
 		return nil, err
 	}
 
+	if token.Type == lexer.PLUS || token.Type == lexer.MINUS {
+		factor, err := p.Factor()
+		if err != nil {
+			return nil, err
+		}
+
+		return &UnaryNode{Token: token, Child: factor}, nil
+	}
+
 	if token.Type == lexer.LPAREN {
 		val, err := p.Expr()
 		if err != nil {

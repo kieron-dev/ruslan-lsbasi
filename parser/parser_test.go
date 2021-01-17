@@ -170,6 +170,44 @@ var _ = Describe("parser", func() {
 		})
 	})
 
+	Describe("unary minus", func() {
+		BeforeEach(func() {
+			tokens = []lexer.Token{
+				{Type: lexer.MINUS},
+				{Type: lexer.NUMBER, Value: 5},
+			}
+		})
+
+		It("gives a unary minus with a 5", func() {
+			val, err := pars.Expr()
+			Expect(err).NotTo(HaveOccurred())
+
+			op, ok := val.(*parser.UnaryNode)
+			Expect(ok).To(BeTrue())
+			Expect(op.Token.Type).To(Equal(lexer.MINUS))
+			Expect(op.Child.(*parser.NumNode).Value).To(Equal(5))
+		})
+	})
+
+	Describe("unary plus", func() {
+		BeforeEach(func() {
+			tokens = []lexer.Token{
+				{Type: lexer.PLUS},
+				{Type: lexer.NUMBER, Value: 4},
+			}
+		})
+
+		It("gives a unary plus with a 4", func() {
+			val, err := pars.Expr()
+			Expect(err).NotTo(HaveOccurred())
+
+			op, ok := val.(*parser.UnaryNode)
+			Expect(ok).To(BeTrue())
+			Expect(op.Token.Type).To(Equal(lexer.PLUS))
+			Expect(op.Child.(*parser.NumNode).Value).To(Equal(4))
+		})
+	})
+
 	Context("invalid input", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{

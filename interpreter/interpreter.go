@@ -56,3 +56,13 @@ func (i *Interpreter) VisitBinOp(node *parser.BinOpNode) interface{} {
 	log.Fatalf("weird bin op node: %v", *node)
 	return nil
 }
+
+func (i *Interpreter) VisitUnary(node *parser.UnaryNode) interface{} {
+	child := node.Child.Accept(i).(int)
+
+	if node.Token.Type == lexer.MINUS {
+		return -child
+	}
+
+	return child
+}

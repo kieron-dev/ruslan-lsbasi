@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/kieron-dev/lsbasi/lexer"
 	"github.com/kieron-dev/lsbasi/parser"
 )
 
@@ -36,4 +37,14 @@ func (rp ReversePolish) VisitBinOp(node *parser.BinOpNode) interface{} {
 
 func (rp ReversePolish) VisitNum(node *parser.NumNode) interface{} {
 	return strconv.Itoa(node.Value)
+}
+
+func (rp ReversePolish) VisitUnary(node *parser.UnaryNode) interface{} {
+	child := node.Child.Accept(rp)
+	postfix := ""
+	if node.Token.Type == lexer.MINUS {
+		postfix = " neg"
+	}
+
+	return child.(string) + postfix
 }

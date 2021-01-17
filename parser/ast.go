@@ -5,6 +5,7 @@ import "github.com/kieron-dev/lsbasi/lexer"
 type Visitor interface {
 	VisitBinOp(*BinOpNode) interface{}
 	VisitNum(*NumNode) interface{}
+	VisitUnary(*UnaryNode) interface{}
 }
 
 type ASTNode interface {
@@ -28,4 +29,13 @@ type NumNode struct {
 
 func (n *NumNode) Accept(v Visitor) interface{} {
 	return v.VisitNum(n)
+}
+
+type UnaryNode struct {
+	Token lexer.Token
+	Child ASTNode
+}
+
+func (n *UnaryNode) Accept(v Visitor) interface{} {
+	return v.VisitUnary(n)
 }
