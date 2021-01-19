@@ -36,9 +36,9 @@ var _ = Describe("parser", func() {
 	Describe("addition", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.NUMBER, Value: 3},
-				{Type: lexer.PLUS},
-				{Type: lexer.NUMBER, Value: 8},
+				{Type: lexer.Number, Value: 3},
+				{Type: lexer.Plus},
+				{Type: lexer.Number, Value: 8},
 			}
 		})
 
@@ -47,7 +47,7 @@ var _ = Describe("parser", func() {
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
 			Expect(ok).To(BeTrue())
-			Expect(binOp.Token.Type).To(Equal(lexer.PLUS))
+			Expect(binOp.Token.Type).To(Equal(lexer.Plus))
 			Expect(binOp.Left.(*parser.NumNode).Value).To(Equal(3))
 			Expect(binOp.Right.(*parser.NumNode).Value).To(Equal(8))
 		})
@@ -56,11 +56,11 @@ var _ = Describe("parser", func() {
 	Describe("multiple addition", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.NUMBER, Value: 3},
-				{Type: lexer.PLUS},
-				{Type: lexer.NUMBER, Value: 8},
-				{Type: lexer.PLUS},
-				{Type: lexer.NUMBER, Value: 6},
+				{Type: lexer.Number, Value: 3},
+				{Type: lexer.Plus},
+				{Type: lexer.Number, Value: 8},
+				{Type: lexer.Plus},
+				{Type: lexer.Number, Value: 6},
 			}
 		})
 
@@ -72,8 +72,8 @@ var _ = Describe("parser", func() {
 			binOp2, ok := binOp.Left.(*parser.BinOpNode)
 			Expect(ok).To(BeTrue())
 
-			Expect(binOp.Token.Type).To(Equal(lexer.PLUS))
-			Expect(binOp2.Token.Type).To(Equal(lexer.PLUS))
+			Expect(binOp.Token.Type).To(Equal(lexer.Plus))
+			Expect(binOp2.Token.Type).To(Equal(lexer.Plus))
 			Expect(binOp2.Left.(*parser.NumNode).Value).To(Equal(3))
 			Expect(binOp2.Right.(*parser.NumNode).Value).To(Equal(8))
 			Expect(binOp.Right.(*parser.NumNode).Value).To(Equal(6))
@@ -83,9 +83,9 @@ var _ = Describe("parser", func() {
 	Describe("subtraction", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.NUMBER, Value: 3},
-				{Type: lexer.MINUS},
-				{Type: lexer.NUMBER, Value: 8},
+				{Type: lexer.Number, Value: 3},
+				{Type: lexer.Minus},
+				{Type: lexer.Number, Value: 8},
 			}
 		})
 
@@ -94,7 +94,7 @@ var _ = Describe("parser", func() {
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
 			Expect(ok).To(BeTrue())
-			Expect(binOp.Token.Type).To(Equal(lexer.MINUS))
+			Expect(binOp.Token.Type).To(Equal(lexer.Minus))
 			Expect(binOp.Left.(*parser.NumNode).Value).To(Equal(3))
 			Expect(binOp.Right.(*parser.NumNode).Value).To(Equal(8))
 		})
@@ -103,9 +103,9 @@ var _ = Describe("parser", func() {
 	Describe("multiplication", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.NUMBER, Value: 3},
-				{Type: lexer.MULT},
-				{Type: lexer.NUMBER, Value: 8},
+				{Type: lexer.Number, Value: 3},
+				{Type: lexer.Mult},
+				{Type: lexer.Number, Value: 8},
 			}
 		})
 
@@ -114,7 +114,7 @@ var _ = Describe("parser", func() {
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
 			Expect(ok).To(BeTrue())
-			Expect(binOp.Token.Type).To(Equal(lexer.MULT))
+			Expect(binOp.Token.Type).To(Equal(lexer.Mult))
 			Expect(binOp.Left.(*parser.NumNode).Value).To(Equal(3))
 			Expect(binOp.Right.(*parser.NumNode).Value).To(Equal(8))
 		})
@@ -123,9 +123,9 @@ var _ = Describe("parser", func() {
 	Describe("division", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.NUMBER, Value: 25},
-				{Type: lexer.DIV},
-				{Type: lexer.NUMBER, Value: 8},
+				{Type: lexer.Number, Value: 25},
+				{Type: lexer.Div},
+				{Type: lexer.Number, Value: 8},
 			}
 		})
 
@@ -134,7 +134,7 @@ var _ = Describe("parser", func() {
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
 			Expect(ok).To(BeTrue())
-			Expect(binOp.Token.Type).To(Equal(lexer.DIV))
+			Expect(binOp.Token.Type).To(Equal(lexer.Div))
 			Expect(binOp.Left.(*parser.NumNode).Value).To(Equal(25))
 			Expect(binOp.Right.(*parser.NumNode).Value).To(Equal(8))
 		})
@@ -143,13 +143,13 @@ var _ = Describe("parser", func() {
 	Describe("parentheses", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.NUMBER, Value: 25},
-				{Type: lexer.MINUS},
-				{Type: lexer.LPAREN},
-				{Type: lexer.NUMBER, Value: 5},
-				{Type: lexer.PLUS},
-				{Type: lexer.NUMBER, Value: 6},
-				{Type: lexer.RPAREN},
+				{Type: lexer.Number, Value: 25},
+				{Type: lexer.Minus},
+				{Type: lexer.LParen},
+				{Type: lexer.Number, Value: 5},
+				{Type: lexer.Plus},
+				{Type: lexer.Number, Value: 6},
+				{Type: lexer.RParen},
 			}
 		})
 
@@ -163,8 +163,8 @@ var _ = Describe("parser", func() {
 			Expect(ok).To(BeTrue())
 
 			Expect(binOp.Left.(*parser.NumNode).Value).To(Equal(25))
-			Expect(binOp.Token.Type).To(Equal(lexer.MINUS))
-			Expect(binOp2.Token.Type).To(Equal(lexer.PLUS))
+			Expect(binOp.Token.Type).To(Equal(lexer.Minus))
+			Expect(binOp2.Token.Type).To(Equal(lexer.Plus))
 			Expect(binOp2.Left.(*parser.NumNode).Value).To(Equal(5))
 			Expect(binOp2.Right.(*parser.NumNode).Value).To(Equal(6))
 		})
@@ -173,8 +173,8 @@ var _ = Describe("parser", func() {
 	Describe("unary minus", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.MINUS},
-				{Type: lexer.NUMBER, Value: 5},
+				{Type: lexer.Minus},
+				{Type: lexer.Number, Value: 5},
 			}
 		})
 
@@ -184,7 +184,7 @@ var _ = Describe("parser", func() {
 
 			op, ok := val.(*parser.UnaryNode)
 			Expect(ok).To(BeTrue())
-			Expect(op.Token.Type).To(Equal(lexer.MINUS))
+			Expect(op.Token.Type).To(Equal(lexer.Minus))
 			Expect(op.Child.(*parser.NumNode).Value).To(Equal(5))
 		})
 	})
@@ -192,8 +192,8 @@ var _ = Describe("parser", func() {
 	Describe("unary plus", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.PLUS},
-				{Type: lexer.NUMBER, Value: 4},
+				{Type: lexer.Plus},
+				{Type: lexer.Number, Value: 4},
 			}
 		})
 
@@ -203,7 +203,7 @@ var _ = Describe("parser", func() {
 
 			op, ok := val.(*parser.UnaryNode)
 			Expect(ok).To(BeTrue())
-			Expect(op.Token.Type).To(Equal(lexer.PLUS))
+			Expect(op.Token.Type).To(Equal(lexer.Plus))
 			Expect(op.Child.(*parser.NumNode).Value).To(Equal(4))
 		})
 	})
@@ -211,8 +211,8 @@ var _ = Describe("parser", func() {
 	Context("invalid input", func() {
 		BeforeEach(func() {
 			tokens = []lexer.Token{
-				{Type: lexer.NUMBER, Value: 3},
-				{Type: lexer.MULT},
+				{Type: lexer.Number, Value: 3},
+				{Type: lexer.Mult},
 			}
 		})
 

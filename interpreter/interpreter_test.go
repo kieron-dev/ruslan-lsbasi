@@ -40,7 +40,7 @@ var _ = Describe("Interpreter", func() {
 		BeforeEach(func() {
 			ast2 := &parser.NumNode{Value: 2}
 			ast5 := &parser.NumNode{Value: 5}
-			ast = &parser.BinOpNode{Left: ast2, Right: ast5, Token: lexer.Token{Type: lexer.PLUS, Value: byte('+')}}
+			ast = &parser.BinOpNode{Left: ast2, Right: ast5, Token: lexer.Token{Type: lexer.Plus, Value: byte('+')}}
 		})
 
 		It("gets 7", func() {
@@ -55,8 +55,8 @@ var _ = Describe("Interpreter", func() {
 			ast2 := &parser.NumNode{Value: 2}
 			ast3 := &parser.NumNode{Value: 3}
 			ast5 := &parser.NumNode{Value: 5}
-			astMult := &parser.BinOpNode{Left: ast5, Right: ast3, Token: lexer.Token{Type: lexer.MULT, Value: byte('*')}}
-			ast = &parser.BinOpNode{Left: ast2, Right: astMult, Token: lexer.Token{Type: lexer.PLUS, Value: byte('+')}}
+			astMult := &parser.BinOpNode{Left: ast5, Right: ast3, Token: lexer.Token{Type: lexer.Mult, Value: byte('*')}}
+			ast = &parser.BinOpNode{Left: ast2, Right: astMult, Token: lexer.Token{Type: lexer.Plus, Value: byte('+')}}
 		})
 
 		It("gets 17", func() {
@@ -69,7 +69,7 @@ var _ = Describe("Interpreter", func() {
 	Context("-5", func() {
 		BeforeEach(func() {
 			ast5 := &parser.NumNode{Value: 5}
-			ast = &parser.UnaryNode{Child: ast5, Token: lexer.Token{Type: lexer.MINUS, Value: byte('-')}}
+			ast = &parser.UnaryNode{Child: ast5, Token: lexer.Token{Type: lexer.Minus, Value: byte('-')}}
 		})
 
 		It("gets -5", func() {

@@ -43,13 +43,13 @@ func (i *Interpreter) VisitBinOp(node *parser.BinOpNode) interface{} {
 	right := node.Right.Accept(i).(int)
 
 	switch node.Token.Type {
-	case lexer.PLUS:
+	case lexer.Plus:
 		return left + right
-	case lexer.MINUS:
+	case lexer.Minus:
 		return left - right
-	case lexer.MULT:
+	case lexer.Mult:
 		return left * right
-	case lexer.DIV:
+	case lexer.Div:
 		return left / right
 	}
 
@@ -60,7 +60,7 @@ func (i *Interpreter) VisitBinOp(node *parser.BinOpNode) interface{} {
 func (i *Interpreter) VisitUnary(node *parser.UnaryNode) interface{} {
 	child := node.Child.Accept(i).(int)
 
-	if node.Token.Type == lexer.MINUS {
+	if node.Token.Type == lexer.Minus {
 		return -child
 	}
 

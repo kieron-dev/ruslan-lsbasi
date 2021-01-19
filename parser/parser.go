@@ -39,7 +39,7 @@ func (p *Parser) Expr() (ASTNode, error) {
 		return nil, err
 	}
 
-	for p.currentToken.Type == lexer.PLUS || p.currentToken.Type == lexer.MINUS {
+	for p.currentToken.Type == lexer.Plus || p.currentToken.Type == lexer.Minus {
 		op := p.currentToken
 
 		nextVal, err := p.Term()
@@ -59,7 +59,7 @@ func (p *Parser) Term() (ASTNode, error) {
 		return nil, err
 	}
 
-	for p.currentToken.Type == lexer.MULT || p.currentToken.Type == lexer.DIV {
+	for p.currentToken.Type == lexer.Mult || p.currentToken.Type == lexer.Div {
 		op := p.currentToken
 
 		nextVal, err := p.Factor()
@@ -79,7 +79,7 @@ func (p *Parser) Factor() (ASTNode, error) {
 		return nil, err
 	}
 
-	if token.Type == lexer.PLUS || token.Type == lexer.MINUS {
+	if token.Type == lexer.Plus || token.Type == lexer.Minus {
 		factor, err := p.Factor()
 		if err != nil {
 			return nil, err
@@ -88,13 +88,13 @@ func (p *Parser) Factor() (ASTNode, error) {
 		return &UnaryNode{Token: token, Child: factor}, nil
 	}
 
-	if token.Type == lexer.LPAREN {
+	if token.Type == lexer.LParen {
 		val, err := p.Expr()
 		if err != nil {
 			return nil, err
 		}
 
-		if p.currentToken.Type != lexer.RPAREN {
+		if p.currentToken.Type != lexer.RParen {
 			return nil, errors.New("expected closing parenthesis")
 		}
 
@@ -105,7 +105,7 @@ func (p *Parser) Factor() (ASTNode, error) {
 		return val, nil
 	}
 
-	if token.Type != lexer.NUMBER {
+	if token.Type != lexer.Number {
 		return nil, errors.New("expected a left parenthesis or a number")
 	}
 

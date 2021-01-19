@@ -42,7 +42,7 @@ func (rp ReversePolish) VisitNum(node *parser.NumNode) interface{} {
 func (rp ReversePolish) VisitUnary(node *parser.UnaryNode) interface{} {
 	child := node.Child.Accept(rp)
 	postfix := ""
-	if node.Token.Type == lexer.MINUS {
+	if node.Token.Type == lexer.Minus {
 		postfix = " neg"
 	}
 

@@ -11,22 +11,42 @@ import (
 type TokenType int
 
 const (
-	UNKNOWN TokenType = iota
-	NUMBER
-	PLUS
-	MINUS
-	MULT
-	DIV
-	LPAREN
-	RPAREN
+	Unknown TokenType = iota
+	Number
+	Plus
+	Minus
+	Mult
+	Div
+	LParen
+	RParen
 	EOF
-	BEGIN
-	END
+	Begin
+	End
 	ID
-	DOT
-	SEMI
-	ASSIGN
+	Dot
+	Semi
+	Assign
 )
+
+func (tt TokenType) String() string {
+	return []string{
+		"Unknown",
+		"Number",
+		"Plus",
+		"Minus",
+		"Multiply",
+		"Divide",
+		"left paren",
+		"right paren",
+		"EOF",
+		"begin",
+		"end",
+		"ID",
+		"dot",
+		"semicolon",
+		"assignment",
+	}[tt]
+}
 
 type Token struct {
 	Type  TokenType
@@ -39,8 +59,8 @@ type Tokeniser struct {
 }
 
 var reservedWords = map[string]TokenType{
-	"BEGIN": BEGIN,
-	"END":   END,
+	"BEGIN": Begin,
+	"END":   End,
 }
 
 func NewTokeniser(data io.Reader) *Tokeniser {
@@ -80,55 +100,55 @@ func (t *Tokeniser) NextToken() (Token, error) {
 	switch {
 	case c == '+':
 		token = Token{
-			Type:  PLUS,
+			Type:  Plus,
 			Value: c,
 		}
 
 	case c == '-':
 		token = Token{
-			Type:  MINUS,
+			Type:  Minus,
 			Value: c,
 		}
 
 	case c == '*':
 		token = Token{
-			Type:  MULT,
+			Type:  Mult,
 			Value: c,
 		}
 
 	case c == '/':
 		token = Token{
-			Type:  DIV,
+			Type:  Div,
 			Value: c,
 		}
 
 	case c == '(':
 		token = Token{
-			Type:  LPAREN,
+			Type:  LParen,
 			Value: c,
 		}
 
 	case c == ')':
 		token = Token{
-			Type:  RPAREN,
+			Type:  RParen,
 			Value: c,
 		}
 
 	case c == '.':
 		token = Token{
-			Type:  DOT,
+			Type:  Dot,
 			Value: c,
 		}
 
 	case c == ';':
 		token = Token{
-			Type:  SEMI,
+			Type:  Semi,
 			Value: c,
 		}
 
 	case c == ':' && byte2 == '=':
 		token = Token{
-			Type:  ASSIGN,
+			Type:  Assign,
 			Value: ":=",
 		}
 		_, err := t.buf.Discard(1)
@@ -143,7 +163,7 @@ func (t *Tokeniser) NextToken() (Token, error) {
 		}
 
 		token = Token{
-			Type:  NUMBER,
+			Type:  Number,
 			Value: n,
 		}
 
@@ -160,7 +180,7 @@ func (t *Tokeniser) NextToken() (Token, error) {
 		return Token{Type: ID, Value: id}, nil
 	}
 
-	if token.Type == UNKNOWN {
+	if token.Type == Unknown {
 		return token, fmt.Errorf("unexpected character: %q", c)
 	}
 
