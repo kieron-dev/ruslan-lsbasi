@@ -5,7 +5,32 @@ import (
 
 	"github.com/kieron-dev/lsbasi/lexer"
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
+)
+
+var _ = DescribeTable("individual tokens", func(expr string, t lexer.TokenType, v interface{}) {
+	tokeniser := lexer.NewTokeniser(strings.NewReader(expr))
+	token, err := tokeniser.NextToken()
+	Expect(err).NotTo(HaveOccurred())
+	Expect(token.Type).To(Equal(t))
+	if v != nil {
+		Expect(token.Value).To(Equal(v))
+	}
+},
+
+	Entry("multi-digit number", "31", lexer.NUMBER, 31),
+	Entry("minus", "-", lexer.MINUS, nil),
+	Entry("mult", "*", lexer.MULT, nil),
+	Entry("div", "/", lexer.DIV, nil),
+	Entry("lparen", "(", lexer.LPAREN, nil),
+	Entry("rparen", ")", lexer.RPAREN, nil),
+	Entry("begin", "BEGIN", lexer.BEGIN, nil),
+	Entry("end", "END", lexer.END, nil),
+	Entry("an ID", "foo8", lexer.ID, "foo8"),
+	Entry("dot", ".", lexer.DOT, nil),
+	Entry("semi", ";", lexer.SEMI, nil),
+	Entry("assignment", ":=", lexer.ASSIGN, nil),
 )
 
 var _ = Describe("Tokeniser", func() {
@@ -52,18 +77,6 @@ var _ = Describe("Tokeniser", func() {
 			}))
 		})
 
-		Context("multi-digit numbers", func() {
-			BeforeEach(func() {
-				expr = "31"
-			})
-
-			It("gets a number token with value 31", func() {
-				token, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token.Value).To(Equal(31))
-			})
-		})
-
 		Context("spaces are ignored", func() {
 			BeforeEach(func() {
 				expr = "31   178"
@@ -79,96 +92,40 @@ var _ = Describe("Tokeniser", func() {
 			})
 		})
 
-		Context("MINUS", func() {
-			BeforeEach(func() {
-				expr = "-"
-			})
-
-			It("recognises -", func() {
-				token, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token.Type).To(Equal(lexer.MINUS))
-			})
-		})
-
-		Context("MULT", func() {
-			BeforeEach(func() {
-				expr = "*"
-			})
-
-			It("recognises *", func() {
-				token, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token.Type).To(Equal(lexer.MULT))
-			})
-		})
-
-		Context("DIV", func() {
-			BeforeEach(func() {
-				expr = "/"
-			})
-
-			It("recognises /", func() {
-				token, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token.Type).To(Equal(lexer.DIV))
-			})
-		})
-
-		Context("parentheses", func() {
-			BeforeEach(func() {
-				expr = "()"
-			})
-
-			It("recognises ()", func() {
-				token, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token.Type).To(Equal(lexer.LPAREN))
-
-				token, err = tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token.Type).To(Equal(lexer.RPAREN))
-			})
-		})
-
 		Context("invalid input", func() {
 			BeforeEach(func() {
-				expr = "asdf"
+				expr = "_asdf"
 			})
 
 			It("returns an error from NextToken()", func() {
 				_, err := tokeniser.NextToken()
-				Expect(err).To(MatchError(ContainSubstring("unexpected character: 'a'")))
+				Expect(err).To(MatchError(ContainSubstring("unexpected character: '_'")))
 			})
 		})
 
-		Describe("workflow", func() {
+		Describe("NextToken", func() {
 			BeforeEach(func() {
-				expr = "3 + 5 * 9 - 2"
+				expr = "BEGIN a := 3 * - 9; END"
 			})
 
 			It("next functions as expected", func() {
-				token1, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token1.Type).To(Equal(lexer.NUMBER))
-				Expect(token1.Value).To(Equal(3))
-
-				token2, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(token2.Type).To(Equal(lexer.PLUS))
-
-				for i := 0; i < 5; i++ {
-					_, err := tokeniser.NextToken()
-					Expect(err).NotTo(HaveOccurred())
+				expected := []lexer.Token{
+					{Type: lexer.BEGIN, Value: "BEGIN"},
+					{Type: lexer.ID, Value: "a"},
+					{Type: lexer.ASSIGN, Value: ":="},
+					{Type: lexer.NUMBER, Value: 3},
+					{Type: lexer.MULT, Value: byte('*')},
+					{Type: lexer.MINUS, Value: byte('-')},
+					{Type: lexer.NUMBER, Value: 9},
+					{Type: lexer.SEMI, Value: byte(';')},
+					{Type: lexer.END, Value: "END"},
 				}
 
-				tokenEOF, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(tokenEOF.Type).To(Equal(lexer.EOF))
-
-				tokenEOF2, err := tokeniser.NextToken()
-				Expect(err).NotTo(HaveOccurred())
-				Expect(tokenEOF2.Type).To(Equal(lexer.EOF))
+				for _, e := range expected {
+					t, err := tokeniser.NextToken()
+					Expect(err).NotTo(HaveOccurred())
+					Expect(t).To(Equal(e))
+				}
 			})
 		})
 	})
