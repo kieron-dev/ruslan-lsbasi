@@ -6,64 +6,59 @@ import (
 	"github.com/kieron-dev/lsbasi/lexer"
 	"github.com/kieron-dev/lsbasi/parser"
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/extensions/table"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Interpreter", func() {
-	var (
-		pars   *interpreterfakes.FakeExpresser
-		interp *interpreter.Interpreter
-		ast    parser.ASTNode
+	DescribeTable("expressions", func(expr parser.ASTNode, expectedValue int) {
+		ast := &parser.CompoundNode{
+			Children: []parser.ASTNode{
+				&parser.AssignNode{
+					Left:  &parser.VarNode{Value: "res"},
+					Right: expr,
+				},
+			},
+		}
+
+		pars := new(interpreterfakes.FakeProgrammer)
+		pars.ProgramReturns(ast, nil)
+
+		interp := interpreter.NewInterpreter(pars)
+		err := interp.Interpret()
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(interp.GlobalScope()["res"]).To(Equal(expectedValue))
+	},
+
+		Entry("2+5",
+			&parser.BinOpNode{
+				Left:  &parser.NumNode{Value: 2},
+				Right: &parser.NumNode{Value: 5},
+				Token: lexer.Token{Type: lexer.Plus, Value: byte('+')},
+			},
+			7,
+		),
+
+		Entry("2+5*3",
+			&parser.BinOpNode{
+				Left: &parser.NumNode{Value: 2},
+				Right: &parser.BinOpNode{
+					Left:  &parser.NumNode{Value: 5},
+					Right: &parser.NumNode{Value: 3},
+					Token: lexer.Token{Type: lexer.Mult, Value: byte('*')},
+				},
+				Token: lexer.Token{Type: lexer.Plus, Value: byte('+')},
+			},
+			17,
+		),
+
+		Entry("-5",
+			&parser.UnaryNode{
+				Child: &parser.NumNode{Value: 5},
+				Token: lexer.Token{Type: lexer.Minus, Value: byte('-')},
+			},
+			-5,
+		),
 	)
-
-	BeforeEach(func() {
-		pars = new(interpreterfakes.FakeExpresser)
-		ast = &parser.NumNode{Value: 10}
-	})
-
-	JustBeforeEach(func() {
-		interp = interpreter.NewInterpreter(pars)
-		pars.ExprReturns(ast, nil)
-	})
-
-	It("calcs a single number", func() {
-		Expect(interp.Interpret()).To(Equal(10))
-	})
-
-	Context("2+5", func() {
-		BeforeEach(func() {
-			ast2 := &parser.NumNode{Value: 2}
-			ast5 := &parser.NumNode{Value: 5}
-			ast = &parser.BinOpNode{Left: ast2, Right: ast5, Token: lexer.Token{Type: lexer.Plus, Value: byte('+')}}
-		})
-
-		It("gets 7", func() {
-			Expect(interp.Interpret()).To(Equal(7))
-		})
-	})
-
-	Context("2+5*3", func() {
-		BeforeEach(func() {
-			ast2 := &parser.NumNode{Value: 2}
-			ast3 := &parser.NumNode{Value: 3}
-			ast5 := &parser.NumNode{Value: 5}
-			astMult := &parser.BinOpNode{Left: ast5, Right: ast3, Token: lexer.Token{Type: lexer.Mult, Value: byte('*')}}
-			ast = &parser.BinOpNode{Left: ast2, Right: astMult, Token: lexer.Token{Type: lexer.Plus, Value: byte('+')}}
-		})
-
-		It("gets 17", func() {
-			Expect(interp.Interpret()).To(Equal(17))
-		})
-	})
-
-	Context("-5", func() {
-		BeforeEach(func() {
-			ast5 := &parser.NumNode{Value: 5}
-			ast = &parser.UnaryNode{Child: ast5, Token: lexer.Token{Type: lexer.Minus, Value: byte('-')}}
-		})
-
-		It("gets -5", func() {
-			Expect(interp.Interpret()).To(Equal(-5))
-		})
-	})
 })

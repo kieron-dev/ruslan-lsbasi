@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/kieron-dev/lsbasi/interpreter"
@@ -13,12 +14,17 @@ import (
 
 var _ = Describe("Integration", func() {
 	DescribeTable("interpreting expressions", func(expr string, res int) {
-		tokeniser := lexer.NewTokeniser(strings.NewReader(expr))
+		program := fmt.Sprintf(`
+BEGIN
+	res := %s;
+END.
+`, expr)
+		tokeniser := lexer.NewTokeniser(strings.NewReader(program))
 		pars := parser.NewParser(tokeniser)
 		interp := interpreter.NewInterpreter(pars)
-		out, err := interp.Interpret()
+		err := interp.Interpret()
 		Expect(err).NotTo(HaveOccurred())
-		Expect(out).To(Equal(res))
+		Expect(interp.GlobalScope()["res"]).To(Equal(res))
 	},
 
 		Entry("single number", "9", 9),

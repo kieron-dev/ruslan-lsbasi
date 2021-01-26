@@ -10,28 +10,32 @@ import (
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
-//counterfeiter:generate . Expresser
+//counterfeiter:generate . Programmer
 
-type Expresser interface {
-	Expr() (parser.ASTNode, error)
+type Programmer interface {
+	Program() (parser.ASTNode, error)
 }
 
 type Interpreter struct {
-	pars Expresser
+	pars          Programmer
+	globalSymbols map[string]int
 }
 
-func NewInterpreter(pars Expresser) *Interpreter {
+func NewInterpreter(pars Programmer) *Interpreter {
 	return &Interpreter{
-		pars: pars,
+		pars:          pars,
+		globalSymbols: map[string]int{},
 	}
 }
 
-func (i *Interpreter) Interpret() (int, error) {
-	ast, err := i.pars.Expr()
+func (i *Interpreter) Interpret() error {
+	expr, err := i.pars.Program()
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return ast.Accept(i).(int), nil
+	expr.Accept(i)
+
+	return nil
 }
 
 func (i *Interpreter) VisitNum(node *parser.NumNode) interface{} {
@@ -65,4 +69,32 @@ func (i *Interpreter) VisitUnary(node *parser.UnaryNode) interface{} {
 	}
 
 	return child
+}
+
+func (i *Interpreter) VisitCompound(node *parser.CompoundNode) interface{} {
+	for _, child := range node.Children {
+		child.Accept(i)
+	}
+
+	return nil
+}
+
+func (i *Interpreter) VisitAssign(node *parser.AssignNode) interface{} {
+	varName := node.Left.Value
+	value := node.Right.Accept(i)
+	i.globalSymbols[varName] = value.(int)
+
+	return nil
+}
+
+func (i *Interpreter) VisitVar(node *parser.VarNode) interface{} {
+	return nil
+}
+
+func (i *Interpreter) VisitNoOp(node *parser.NoOpNode) interface{} {
+	return nil
+}
+
+func (i *Interpreter) GlobalScope() map[string]int {
+	return i.globalSymbols
 }

@@ -79,7 +79,8 @@ var _ = Describe("Tokeniser", func() {
 
 		Context("spaces are ignored", func() {
 			BeforeEach(func() {
-				expr = "31   178"
+				expr = `
+		31   178`
 			})
 
 			It("gets a number token with value 31", func() {

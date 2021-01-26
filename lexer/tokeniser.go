@@ -71,7 +71,7 @@ func NewTokeniser(data io.Reader) *Tokeniser {
 
 func (t *Tokeniser) NextToken() (Token, error) {
 	c := byte(' ')
-	for c == ' ' {
+	for c == ' ' || c == '\t' || c == '\n' {
 		var err error
 		c, err = t.buf.ReadByte()
 		if err != nil {
