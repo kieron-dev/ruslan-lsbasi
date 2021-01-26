@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("parser", func() {
+var _ = Describe("parser AST construction", func() {
 	var (
 		pars      *parser.Parser
 		tokeniser *parserfakes.FakeTokeniser
@@ -42,7 +42,7 @@ var _ = Describe("parser", func() {
 			}
 		})
 
-		It("can add two numbers", func() {
+		It("creates a BinOpNode with 3 and 8", func() {
 			val, err := pars.Expr()
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
@@ -64,7 +64,7 @@ var _ = Describe("parser", func() {
 			}
 		})
 
-		It("can add two numbers", func() {
+		It("has a BinOp with BinOp(3, 8) and 6 as children", func() {
 			val, err := pars.Expr()
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
@@ -89,7 +89,7 @@ var _ = Describe("parser", func() {
 			}
 		})
 
-		It("can subtract two numbers", func() {
+		It("creates a minus BinOp with 3 and 8 as children", func() {
 			val, err := pars.Expr()
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
@@ -109,7 +109,7 @@ var _ = Describe("parser", func() {
 			}
 		})
 
-		It("can multiply two numbers", func() {
+		It("creates a Mult BinOp with 3 and 8 as children", func() {
 			val, err := pars.Expr()
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)
@@ -129,7 +129,7 @@ var _ = Describe("parser", func() {
 			}
 		})
 
-		It("can multiply two numbers", func() {
+		It("creates a Div BinOp with 25 and 8 as children", func() {
 			val, err := pars.Expr()
 			Expect(err).NotTo(HaveOccurred())
 			binOp, ok := val.(*parser.BinOpNode)

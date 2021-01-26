@@ -119,6 +119,7 @@ var _ = Describe("Tokeniser", func() {
 					{Type: lexer.Number, Value: 9},
 					{Type: lexer.Semi, Value: byte(';')},
 					{Type: lexer.End, Value: "END"},
+					{Type: lexer.EOF, Value: nil},
 				}
 
 				for _, e := range expected {
