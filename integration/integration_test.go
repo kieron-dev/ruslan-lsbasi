@@ -42,34 +42,4 @@ var _ = Describe("Integration", func() {
 		Entry("unary minus minus", "- - 5  + 3", 8),
 		Entry("unary minus parens", "-(3+2)", -5),
 	)
-
-	DescribeTable("reverse polish translation", func(expr, res string) {
-		tokeniser := lexer.NewTokeniser(strings.NewReader(expr))
-		pars := parser.NewParser(tokeniser)
-		revpol := interpreter.NewReversePolish(pars)
-		out, err := revpol.Interpret()
-		Expect(err).NotTo(HaveOccurred())
-		Expect(out).To(Equal(res))
-	},
-		Entry(
-			"precedence VI",
-			"7 + 3 * (10 / (12 / (3 + 1) - 1))",
-			"7 3 10 12 3 1 + / 1 - / * +",
-		),
-	)
-
-	DescribeTable("lisp translation", func(expr, res string) {
-		tokeniser := lexer.NewTokeniser(strings.NewReader(expr))
-		pars := parser.NewParser(tokeniser)
-		lisp := interpreter.NewLisp(pars)
-		out, err := lisp.Interpret()
-		Expect(err).NotTo(HaveOccurred())
-		Expect(out).To(Equal(res))
-	},
-		Entry(
-			"precedence VI",
-			"7 + 3 * (10 / (12 / (3 + 1) - 1))",
-			"(+ 7 (* 3 (/ 10 (- (/ 12 (+ 3 1)) 1))))",
-		),
-	)
 })

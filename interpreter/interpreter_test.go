@@ -11,11 +11,9 @@ import (
 
 var _ = Describe("Interpreter", func() {
 	var (
-		pars      *interpreterfakes.FakeExpresser
-		interp    *interpreter.Interpreter
-		revpolish interpreter.ReversePolish
-		lisp      interpreter.Lisp
-		ast       parser.ASTNode
+		pars   *interpreterfakes.FakeExpresser
+		interp *interpreter.Interpreter
+		ast    parser.ASTNode
 	)
 
 	BeforeEach(func() {
@@ -25,15 +23,11 @@ var _ = Describe("Interpreter", func() {
 
 	JustBeforeEach(func() {
 		interp = interpreter.NewInterpreter(pars)
-		revpolish = interpreter.NewReversePolish(pars)
-		lisp = interpreter.NewLisp(pars)
 		pars.ExprReturns(ast, nil)
 	})
 
 	It("calcs a single number", func() {
 		Expect(interp.Interpret()).To(Equal(10))
-		Expect(revpolish.Interpret()).To(Equal("10"))
-		Expect(lisp.Interpret()).To(Equal("10"))
 	})
 
 	Context("2+5", func() {
@@ -45,8 +39,6 @@ var _ = Describe("Interpreter", func() {
 
 		It("gets 7", func() {
 			Expect(interp.Interpret()).To(Equal(7))
-			Expect(revpolish.Interpret()).To(Equal("2 5 +"))
-			Expect(lisp.Interpret()).To(Equal("(+ 2 5)"))
 		})
 	})
 
@@ -61,8 +53,6 @@ var _ = Describe("Interpreter", func() {
 
 		It("gets 17", func() {
 			Expect(interp.Interpret()).To(Equal(17))
-			Expect(revpolish.Interpret()).To(Equal("2 5 3 * +"))
-			Expect(lisp.Interpret()).To(Equal("(+ 2 (* 5 3))"))
 		})
 	})
 
@@ -74,8 +64,6 @@ var _ = Describe("Interpreter", func() {
 
 		It("gets -5", func() {
 			Expect(interp.Interpret()).To(Equal(-5))
-			Expect(revpolish.Interpret()).To(Equal("5 neg"))
-			Expect(lisp.Interpret()).To(Equal("(- 5)"))
 		})
 	})
 })
