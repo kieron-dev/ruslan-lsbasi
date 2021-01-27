@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"strings"
 )
 
 type TokenType int
@@ -173,7 +174,7 @@ func (t *Tokeniser) NextToken() (Token, error) {
 			return Token{}, fmt.Errorf("error geting id: %w", err)
 		}
 
-		if tokenType, ok := reservedWords[id]; ok {
+		if tokenType, ok := reservedWords[strings.ToUpper(id)]; ok {
 			return Token{Type: tokenType, Value: id}, nil
 		}
 

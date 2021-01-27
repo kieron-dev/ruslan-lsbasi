@@ -97,12 +97,12 @@ var _ = Describe("Interpreter", func() {
 			map[string]int{"a": 42},
 		),
 
-		Entry("a := 42; b := a - 1",
+		Entry("A := 42; b := a - 1",
 			&parser.CompoundNode{
 				Children: []parser.ASTNode{
 					&parser.AssignNode{
 						Left: &parser.VarNode{
-							Value: "a",
+							Value: "A",
 						},
 						Right: &parser.NumNode{
 							Value: 42,

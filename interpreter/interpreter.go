@@ -3,6 +3,7 @@ package interpreter
 
 import (
 	"log"
+	"strings"
 
 	"github.com/kieron-dev/lsbasi/lexer"
 	"github.com/kieron-dev/lsbasi/parser"
@@ -80,7 +81,7 @@ func (i *Interpreter) VisitCompound(node *parser.CompoundNode) interface{} {
 }
 
 func (i *Interpreter) VisitAssign(node *parser.AssignNode) interface{} {
-	varName := node.Left.Value
+	varName := strings.ToLower(node.Left.Value)
 	value := node.Right.Accept(i)
 	i.globalSymbols[varName] = value.(int)
 
@@ -88,7 +89,8 @@ func (i *Interpreter) VisitAssign(node *parser.AssignNode) interface{} {
 }
 
 func (i *Interpreter) VisitVar(node *parser.VarNode) interface{} {
-	val, ok := i.globalSymbols[node.Value]
+	varName := strings.ToLower(node.Value)
+	val, ok := i.globalSymbols[varName]
 	if !ok {
 		log.Printf("unknown var %q", node.Value)
 	}
