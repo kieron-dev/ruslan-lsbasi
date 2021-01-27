@@ -190,7 +190,7 @@ var _ = DescribeTable("tokens to AST",
 	Entry(`
 BEGIN
 	bob := 2;
-	res := bob
+	res := bob;
 END.
 `,
 		program,
@@ -203,6 +203,7 @@ END.
 			{Type: lexer.ID, Value: "res"},
 			{Type: lexer.Assign},
 			{Type: lexer.ID, Value: "bob"},
+			{Type: lexer.Semi},
 			{Type: lexer.End},
 			{Type: lexer.Dot},
 			{Type: lexer.EOF},
@@ -217,6 +218,7 @@ END.
 					Left:  &parser.VarNode{Value: "res"},
 					Right: &parser.VarNode{Value: "bob"},
 				},
+				&parser.NoOpNode{},
 			},
 		},
 		nil,

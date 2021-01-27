@@ -88,7 +88,12 @@ func (i *Interpreter) VisitAssign(node *parser.AssignNode) interface{} {
 }
 
 func (i *Interpreter) VisitVar(node *parser.VarNode) interface{} {
-	return nil
+	val, ok := i.globalSymbols[node.Value]
+	if !ok {
+		log.Printf("unknown var %q", node.Value)
+	}
+
+	return val
 }
 
 func (i *Interpreter) VisitNoOp(node *parser.NoOpNode) interface{} {

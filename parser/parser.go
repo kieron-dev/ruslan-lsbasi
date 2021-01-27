@@ -2,7 +2,7 @@
 package parser
 
 import (
-	"errors"
+	"fmt"
 
 	"github.com/kieron-dev/lsbasi/lexer"
 )
@@ -46,7 +46,7 @@ func (p *Parser) Program() (ASTNode, error) {
 	}
 
 	if p.currentToken.Type != lexer.Dot {
-		return nil, errors.New("expected a DOT")
+		return nil, fmt.Errorf("expected a DOT, got %s", p.currentToken.Type)
 	}
 
 	if _, err := p.NextToken(); err != nil {
@@ -60,7 +60,7 @@ func (p *Parser) CompoundStatement() (ASTNode, error) {
 	// compound-statement: BEGIN statement-list END
 
 	if p.currentToken.Type != lexer.Begin {
-		return nil, errors.New("expected BEGIN")
+		return nil, fmt.Errorf("expected BEGIN, got %s", p.currentToken.Type)
 	}
 
 	if _, err := p.NextToken(); err != nil {
@@ -73,7 +73,7 @@ func (p *Parser) CompoundStatement() (ASTNode, error) {
 	}
 
 	if p.currentToken.Type != lexer.End {
-		return nil, errors.New("expected END")
+		return nil, fmt.Errorf("expected END, got %s", p.currentToken.Type)
 	}
 
 	if _, err := p.NextToken(); err != nil {
@@ -137,7 +137,7 @@ func (p *Parser) AssignmentStatement() (ASTNode, error) {
 	}
 
 	if p.currentToken.Type != lexer.Assign {
-		return nil, errors.New("expected assignment")
+		return nil, fmt.Errorf("expected :=, got %s", p.currentToken.Type)
 	}
 
 	if _, err := p.NextToken(); err != nil {
@@ -159,7 +159,7 @@ func (p *Parser) Variable() (*VarNode, error) {
 	// variable : ID
 
 	if p.currentToken.Type != lexer.ID {
-		return nil, errors.New("expected an ID")
+		return nil, fmt.Errorf("expected an ID, got %s", p.currentToken.Type)
 	}
 
 	node := &VarNode{
@@ -174,10 +174,6 @@ func (p *Parser) Variable() (*VarNode, error) {
 }
 
 func (p *Parser) Empty() (ASTNode, error) {
-	if _, err := p.NextToken(); err != nil {
-		return nil, err
-	}
-
 	return &NoOpNode{}, nil
 }
 
@@ -256,7 +252,7 @@ func (p *Parser) Factor() (ASTNode, error) {
 		}
 
 		if p.currentToken.Type != lexer.RParen {
-			return nil, errors.New("expected closing parenthesis")
+			return nil, fmt.Errorf("expected ), got %s", p.currentToken.Type)
 		}
 
 		if _, err := p.NextToken(); err != nil {
@@ -271,7 +267,7 @@ func (p *Parser) Factor() (ASTNode, error) {
 	}
 
 	if token.Type != lexer.Number {
-		return nil, errors.New("expected a left parenthesis, ID or a number")
+		return nil, fmt.Errorf("expected a left parenthesis, ID or a number, got %s", token.Type)
 	}
 
 	if _, err := p.NextToken(); err != nil {

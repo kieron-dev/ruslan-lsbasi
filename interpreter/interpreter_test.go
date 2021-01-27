@@ -61,4 +61,70 @@ var _ = Describe("Interpreter", func() {
 			-5,
 		),
 	)
+
+	DescribeTable("programs", func(program *parser.CompoundNode, expectedValue map[string]int) {
+		pars := new(interpreterfakes.FakeProgrammer)
+		pars.ProgramReturns(program, nil)
+		interp := interpreter.NewInterpreter(pars)
+		err := interp.Interpret()
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(interp.GlobalScope()).To(Equal(expectedValue))
+	},
+
+		Entry("empty",
+			&parser.CompoundNode{
+				Children: []parser.ASTNode{
+					&parser.NoOpNode{},
+				},
+			},
+			map[string]int{},
+		),
+
+		Entry("var assignment",
+			&parser.CompoundNode{
+				Children: []parser.ASTNode{
+					&parser.AssignNode{
+						Left: &parser.VarNode{
+							Value: "a",
+						},
+						Right: &parser.NumNode{
+							Value: 42,
+						},
+					},
+				},
+			},
+			map[string]int{"a": 42},
+		),
+
+		Entry("a := 42; b := a - 1",
+			&parser.CompoundNode{
+				Children: []parser.ASTNode{
+					&parser.AssignNode{
+						Left: &parser.VarNode{
+							Value: "a",
+						},
+						Right: &parser.NumNode{
+							Value: 42,
+						},
+					},
+					&parser.AssignNode{
+						Left: &parser.VarNode{
+							Value: "b",
+						},
+						Right: &parser.BinOpNode{
+							Left: &parser.VarNode{
+								Value: "a",
+							},
+							Right: &parser.NumNode{
+								Value: 1,
+							},
+							Token: lexer.Token{Type: lexer.Minus},
+						},
+					},
+				},
+			},
+			map[string]int{"a": 42, "b": 41},
+		),
+	)
 })

@@ -48,4 +48,31 @@ END.
 		Entry("unary minus minus", "- - 5  + 3", 8),
 		Entry("unary minus parens", "-(3+2)", -5),
 	)
+
+	DescribeTable("interpreting programs", func(program string, res map[string]int) {
+		tokeniser := lexer.NewTokeniser(strings.NewReader(program))
+		pars := parser.NewParser(tokeniser)
+		interp := interpreter.NewInterpreter(pars)
+		err := interp.Interpret()
+		Expect(err).NotTo(HaveOccurred())
+		Expect(interp.GlobalScope()).To(Equal(res))
+	},
+
+		Entry("empty block", "BEGIN END.", map[string]int{}),
+		Entry("simple assignment", "BEGIN a := 1 END.", map[string]int{"a": 1}),
+		Entry("assignment to a var", "BEGIN a := 1; b := a END.", map[string]int{"a": 1, "b": 1}),
+		Entry("sample prog from chapter 9", `
+BEGIN
+    BEGIN
+        number := 2;
+        a := number;
+        b := 10 * a + 10 * number / 4;
+        c := a - - b
+    END;
+    x := 11;
+END.
+`,
+			map[string]int{"number": 2, "a": 2, "b": 25, "c": 27, "x": 11},
+		),
+	)
 })
