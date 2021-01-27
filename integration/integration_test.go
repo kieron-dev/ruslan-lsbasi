@@ -35,14 +35,14 @@ END.
 		Entry("add and subtract", "3 + 5 - 51", -43),
 		Entry("simple multiplication", "3 *  5", 15),
 		Entry("multiple multiplication", "3 * 4 * 5", 60),
-		Entry("simple division", "25 /  5", 5),
-		Entry("simple division", "3*24/6", 12),
+		Entry("simple division", "25  DIV   5", 5),
+		Entry("simple division", "3*24 DIV 6", 12),
 		Entry("precedence I", "3 + 4 * 5", 23),
 		Entry("precedence II", "3 * 4 + 5", 17),
-		Entry("precedence III", "3 + 24 / 8", 6),
-		Entry("precedence IV", "(3 + 24) / 9", 3),
-		Entry("precedence V", "(163 + 17) / (9 * 10)", 2),
-		Entry("precedence VI", "7 + 3 * (10 / (12 / (3 + 1) - 1))", 22),
+		Entry("precedence III", "3 + 24  DIV  8", 6),
+		Entry("precedence IV", "(3 + 24)  DIV  9", 3),
+		Entry("precedence V", "(163 + 17)  DIV  (9 * 10)", 2),
+		Entry("precedence VI", "7 + 3 * (10  DIV  (12  DIV  (3 + 1) - 1))", 22),
 		Entry("unary minus", "- 5  + 3", -2),
 		Entry("unary plus", "+ 5  + 3", 8),
 		Entry("unary minus minus", "- - 5  + 3", 8),
@@ -66,7 +66,7 @@ BEGIN
     BEGIN
         number := 2;
         a := number;
-        b := 10 * a + 10 * number / 4;
+        b := 10 * a + 10 * number DIV 4;
         c := a - - b
     END;
     x := 11;

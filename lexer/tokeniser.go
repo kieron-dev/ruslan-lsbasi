@@ -62,6 +62,7 @@ type Tokeniser struct {
 var reservedWords = map[string]TokenType{
 	"BEGIN": Begin,
 	"END":   End,
+	"DIV":   Div,
 }
 
 func NewTokeniser(data io.Reader) *Tokeniser {
@@ -114,12 +115,6 @@ func (t *Tokeniser) NextToken() (Token, error) {
 	case c == '*':
 		token = Token{
 			Type:  Mult,
-			Value: c,
-		}
-
-	case c == '/':
-		token = Token{
-			Type:  Div,
 			Value: c,
 		}
 
