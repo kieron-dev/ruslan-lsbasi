@@ -36,7 +36,7 @@ func (tt TokenType) String() string {
 		"Plus",
 		"Minus",
 		"Multiply",
-		"Divide",
+		"Int Divide",
 		"left paren",
 		"right paren",
 		"EOF",
