@@ -163,7 +163,7 @@ func (t *Tokeniser) NextToken() (Token, error) {
 			Value: n,
 		}
 
-	case (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'):
+	case (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_':
 		id, err := t.readID(c)
 		if err != nil {
 			return Token{}, fmt.Errorf("error geting id: %w", err)
@@ -186,8 +186,10 @@ func (t *Tokeniser) NextToken() (Token, error) {
 }
 
 func (t *Tokeniser) readID(c byte) (string, error) {
+	first := true
 	var s string
-	for (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') {
+	for first || (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') {
+		first = false
 		s += string(c)
 
 		var err error

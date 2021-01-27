@@ -29,6 +29,7 @@ var _ = DescribeTable("individual tokens", func(expr string, t lexer.TokenType, 
 	Entry("begin", "BeGiN", lexer.Begin, nil),
 	Entry("end", "END", lexer.End, nil),
 	Entry("an ID", "foo8", lexer.ID, "foo8"),
+	Entry("an ID with _", "_foo8", lexer.ID, "_foo8"),
 	Entry("dot", ".", lexer.Dot, nil),
 	Entry("semi", ";", lexer.Semi, nil),
 	Entry("assignment", ":=", lexer.Assign, nil),
@@ -96,12 +97,12 @@ var _ = Describe("Tokeniser", func() {
 
 		Context("invalid input", func() {
 			BeforeEach(func() {
-				expr = "_asdf"
+				expr = "&asdf"
 			})
 
 			It("returns an error from NextToken()", func() {
 				_, err := tokeniser.NextToken()
-				Expect(err).To(MatchError(ContainSubstring("unexpected character: '_'")))
+				Expect(err).To(MatchError(ContainSubstring("unexpected character: '&'")))
 			})
 		})
 
