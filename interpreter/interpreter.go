@@ -2,7 +2,7 @@
 package interpreter
 
 import (
-	"log"
+	"fmt"
 	"strings"
 
 	"github.com/kieron-dev/lsbasi/lexer"
@@ -34,72 +34,89 @@ func (i *Interpreter) Interpret() error {
 	if err != nil {
 		return err
 	}
-	expr.Accept(i)
+	_, err = expr.Accept(i)
 
-	return nil
+	return err
 }
 
-func (i *Interpreter) VisitNum(node *parser.NumNode) interface{} {
-	return node.Value
+func (i *Interpreter) VisitNum(node *parser.NumNode) (interface{}, error) {
+	return node.Value, nil
 }
 
-func (i *Interpreter) VisitBinOp(node *parser.BinOpNode) interface{} {
-	left := node.Left.Accept(i).(int)
-	right := node.Right.Accept(i).(int)
+func (i *Interpreter) VisitBinOp(node *parser.BinOpNode) (interface{}, error) {
+	leftVal, err := node.Left.Accept(i)
+	if err != nil {
+		return nil, err
+	}
+	rightVal, err := node.Right.Accept(i)
+	if err != nil {
+		return nil, err
+	}
+	left := leftVal.(int)
+	right := rightVal.(int)
 
 	switch node.Token.Type {
 	case lexer.Plus:
-		return left + right
+		return left + right, nil
 	case lexer.Minus:
-		return left - right
+		return left - right, nil
 	case lexer.Mult:
-		return left * right
+		return left * right, nil
 	case lexer.Div:
-		return left / right
+		return left / right, nil
 	}
 
-	log.Fatalf("weird bin op node: %v", *node)
-	return nil
+	return nil, fmt.Errorf("weird bin op node: %v", *node)
 }
 
-func (i *Interpreter) VisitUnary(node *parser.UnaryNode) interface{} {
-	child := node.Child.Accept(i).(int)
+func (i *Interpreter) VisitUnary(node *parser.UnaryNode) (interface{}, error) {
+	child, err := node.Child.Accept(i)
+	if err != nil {
+		return nil, err
+	}
+	val := child.(int)
 
 	if node.Token.Type == lexer.Minus {
-		return -child
+		return -val, nil
 	}
 
-	return child
+	return val, nil
 }
 
-func (i *Interpreter) VisitCompound(node *parser.CompoundNode) interface{} {
+func (i *Interpreter) VisitCompound(node *parser.CompoundNode) (interface{}, error) {
 	for _, child := range node.Children {
-		child.Accept(i)
+		_, err := child.Accept(i)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	return nil
+	return nil, nil
 }
 
-func (i *Interpreter) VisitAssign(node *parser.AssignNode) interface{} {
+func (i *Interpreter) VisitAssign(node *parser.AssignNode) (interface{}, error) {
 	varName := strings.ToLower(node.Left.Value)
-	value := node.Right.Accept(i)
+	value, err := node.Right.Accept(i)
+	if err != nil {
+		return nil, err
+	}
 	i.globalSymbols[varName] = value.(int)
 
-	return nil
+	return nil, nil
 }
 
-func (i *Interpreter) VisitVar(node *parser.VarNode) interface{} {
+func (i *Interpreter) VisitVar(node *parser.VarNode) (interface{}, error) {
 	varName := strings.ToLower(node.Value)
 	val, ok := i.globalSymbols[varName]
 	if !ok {
-		log.Printf("unknown var %q", node.Value)
+		return nil, fmt.Errorf("unknown var %q", node.Value)
 	}
 
-	return val
+	return val, nil
 }
 
-func (i *Interpreter) VisitNoOp(node *parser.NoOpNode) interface{} {
-	return nil
+func (i *Interpreter) VisitNoOp(node *parser.NoOpNode) (interface{}, error) {
+	return nil, nil
 }
 
 func (i *Interpreter) GlobalScope() map[string]int {
